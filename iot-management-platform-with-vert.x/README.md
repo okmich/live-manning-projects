@@ -1,0 +1,5 @@
+# Manning LiveProject Series on Building an IoT Management Platform with Vert.x by Philippe Charrière
+
+In this series of liveProjects, you'll use the Vert.x Java toolkit to build a complete management platform for a home-based Internet of Things network. You'll take on the role of a developer for SmartHome, a company that manufactures Internet of Things devices that monitor and measure your whole household. Each project in this series will focus on creating a different standalone component of this network. Your challenges will include setting up simulations of IoT interconnectivity for testing, developing gateway software for data transmission, and creating a server that can aggregate data and transmit it to the platform backend.
+
+[View series here](https://www.manning.com/liveprojectseries/iot-management-vertx-ser)

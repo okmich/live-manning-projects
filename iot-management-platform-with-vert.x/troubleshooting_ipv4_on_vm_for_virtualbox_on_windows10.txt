@@ -1,0 +1,86 @@
+
+# get the name of the NIC network on your machine
+multipass mount --format json
+
+# stop the running vm
+multipass stop gateway
+
+# Download PSTools from https://docs.microsoft.com/en-us/sysinternals/downloads/psexec
+# extract.
+# we will be using PsExec64.exe from the extracts.
+
+# Run as administrator
+C:\PSTools\PsExec64.exe -s "C:\Program Files\Oracle\VirtualBox\VBoxManage.exe" modifyvm "gateway" --nic2 bridged --bridgeadapter2 "Intel(R) Dual Band Wireless-AC 3165" 
+C:\PSTools\PsExec64.exe -s "C:\Program Files\Oracle\VirtualBox\VBoxManage.exe" showvminfo "gateway"
+
+# shell into the vm 
+multipass shell gateway
+
+# get the network interface id using
+ip link
+# output should be something like this
+#####################################
+# ubuntu@gateway:~$ ip link
+# 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
+#     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+# 2: enp0s3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP mode DEFAULT group default qlen 1000
+#     link/ether 52:54:00:47:b3:7c brd ff:ff:ff:ff:ff:ff
+# 3: enp0s8: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+#     link/ether 08:00:27:5b:bd:b8 brd ff:ff:ff:ff:ff:ff
+#####################################
+
+# in a text editior open the file /etc/netplan/<whatever-file-you-find-there>.yaml
+# you should find content like this.
+#####################################
+# # This file is generated from information provided by the datasource.  Changes
+# # to it will not persist across an instance reboot.  To disable cloud-init's
+# # network configuration capabilities, write a file
+# # /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg with the following:
+# # network: {config: disabled}
+# network:
+#     ethernets:
+#         enp0s3:
+#             dhcp4: true
+#             match:
+#                 macaddress: 52:54:00:47:b3:7c
+#             set-name: enp0s3
+#     version 2
+#####################################
+
+
+# add an entry for your network interface like below
+# see example below
+
+#####################################
+# network:
+#     ethernets:
+#         enp0s3:
+#             dhcp4: true
+#             match:
+#                 macaddress: 52:54:00:47:b3:7c
+#             set-name: enp0s3
+#         enp0s8:
+#             dhcp4: yes
+#     version 2
+#####################################
+
+# save file and exit
+# run the command netplan apply to apply changes
+netplan apply
+
+# exit the vm and try multipass list again.
+
+# CREDIT TO : https://jon.sprig.gs/blog/post/1574
+
+
+
+
+#####################################
+# I FIGURED AN EVEN FASTER WAY, ADD --network to the launch command
+#####################################
+# example 
+
+multipass launch --name gateway --cpus 1 --mem 512M  --disk 3G --network "name=Wi-Fi,mode=auto"  --cloud-init .\vm.cloud-init.yaml
+
+# here "Wi-Fi" was gotten from the output of the command 
+multipass mount --format json

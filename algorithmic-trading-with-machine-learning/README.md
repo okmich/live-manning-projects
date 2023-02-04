@@ -1,0 +1,4 @@
+# Algorithmic Trading with Machine Learning with Stefan Jansen 
+You'll go hands-on to build an end-to-end strategy workflow that includes sourcing market data, engineering predictive features, and designing and comparing various ML models. Throughout the liveProject you will work with libraries and tools from the industry-standard Python data ecosystem. You'll tackle challenges such as training a regularized linear regression model, tuning a gradient boosting ML model, and evaluating the performance of your strategy — all essential skills for success in this highly lucrative area of machine learning. 
+
+[View live project](https://www.manning.com/liveproject/algorithmic-trading-with-machine-learning)

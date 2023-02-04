@@ -1,0 +1,4 @@
+# Time Series Forecasting in Python with Aric LaBarr 
+In this liveProject, you'll take on the role of a data scientist who's been tasked with forecasting the future consumption of an energy company's customers. Energy consumption is seasonal and complex, and so you'll be using the powerful Python ecosystem to tame your data and make your predictions. Your challenge is to use regression and time series techniques to forecast and visualize hourly energy usage for millions of customers, and present your findings in a clear report to allow your bosses to oversee resource allocation. 
+
+[View live project](https://www.manning.com/liveproject/time-series-forecasting-in-python)
