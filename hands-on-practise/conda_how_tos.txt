@@ -1,0 +1,35 @@
+## to list all conda envs
+conda info --envs
+
+## to remove an env
+conda remove --name <env_name> --all
+
+## to create an env
+## not  using python version will give you the latest python version out there
+## ipython will be added to your env
+conda create --name <env_name> [python=3.10] [ipython]
+
+## to activate an env
+conda activate <env_name>
+
+## to deactivate env
+conda deactivate # returns you to base
+
+## to switch envs
+conda activate <another_env_name>
+
+## add conda-forge channel
+conda config --add channels <channelname> # in this case conda-forge
+conda config --set channel_priority strict
+
+## remove channel 
+conda config --remove channels <some-channel>
+
+## install jupyter notebook
+conda install jupyter notebook
+
+
+## create notebook kernel
+## see my comments here - https://stackoverflow.com/questions/39449725/python-modul-not-found-after-anaconda-installation
+jupyter kernelspec list --json
+python -m ipykernel install --user --name yourenvname --display-name "display-name"
