@@ -33,3 +33,10 @@ conda install jupyter notebook
 ## see my comments here - https://stackoverflow.com/questions/39449725/python-modul-not-found-after-anaconda-installation
 jupyter kernelspec list --json
 python -m ipykernel install --user --name yourenvname --display-name "display-name"
+
+
+
+## some 
+docker run -it -v ${PWD}:/opt/nb -p 8888:8888 mfeurer/auto-sklearn:master /bin/bash -c "mkdir -p /opt/nb && jupyter notebook --notebook-dir=/opt/nb --ip='0.0.0.0' --port=8888 --no-browser --allow-root"
+
+docker run -it -v ${PWD}:/opt/nb -p 8888:8888 pycaret/full /bin/bash -c "mkdir -p /opt/nb && jupyter notebook --notebook-dir=/opt/nb --ip='0.0.0.0' --port=8888 --no-browser --allow-root"
