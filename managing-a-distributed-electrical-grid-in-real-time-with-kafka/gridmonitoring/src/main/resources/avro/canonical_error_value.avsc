@@ -1,0 +1,18 @@
+{
+  "namespace": "manning.devices.canonical",
+  "type": "record",
+  "name": "CanonicalErrorValue",
+  "fields": [
+    {
+      "name": "stack_trace",
+      "type": {
+        "type": "array",
+        "items": "string"
+      }
+    },
+    {
+      "name": "raw_record_bytes",
+       "type": "bytes"
+    }
+  ]
+}

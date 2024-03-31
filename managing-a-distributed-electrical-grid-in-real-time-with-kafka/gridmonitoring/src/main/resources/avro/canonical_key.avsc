@@ -1,0 +1,11 @@
+{
+  "namespace": "manning.devices.canonical",
+  "type": "record",
+  "name": "CanonicalKey",
+  "fields": [
+    {
+      "name": "uuid",
+      "type": ["null", "string"]
+    }
+  ]
+}

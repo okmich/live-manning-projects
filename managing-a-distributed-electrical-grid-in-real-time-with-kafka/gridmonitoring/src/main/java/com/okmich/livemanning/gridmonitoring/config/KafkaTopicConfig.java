@@ -15,8 +15,14 @@ import java.util.Map;
 public class KafkaTopicConfig {
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapAddress;
-    @Value("${kafka.event.topic}")
-    private String eventTopic;
+    @Value("${kafka.event.raw.topic}")
+    private String rawTopic;
+    @Value("${kafka.event.raw.slow.topic}")
+    private String rawSlowTopic;
+    @Value("${kafka.event.raw_dlq.topic}")
+    private String rawDlqTopic;
+    @Value("${kafka.event.canonical.topic}")
+    private String canonicalTopic;
 
     @Bean
     public KafkaAdmin kafkaAdmin() {
@@ -26,7 +32,22 @@ public class KafkaTopicConfig {
     }
 
     @Bean
-    public NewTopic eventTopic1() {
-        return new NewTopic(eventTopic, 1, (short) 1);
+    public NewTopic rawTopic() {
+        return new NewTopic(rawTopic, 1, (short) 1);
+    }
+
+    @Bean
+    public NewTopic rawSlowTopic() {
+        return new NewTopic(rawSlowTopic, 1, (short) 1);
+    }
+
+    @Bean
+    public NewTopic rawErrorTopic() {
+        return new NewTopic(rawDlqTopic, 1, (short) 1);
+    }
+
+    @Bean
+    public NewTopic canonicalTopic() {
+        return new NewTopic(canonicalTopic, 1, (short) 1);
     }
 }

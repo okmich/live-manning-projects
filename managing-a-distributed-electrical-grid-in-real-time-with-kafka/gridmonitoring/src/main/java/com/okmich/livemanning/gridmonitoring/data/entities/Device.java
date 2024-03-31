@@ -25,6 +25,8 @@ public class Device implements Serializable {
     private Map<String, Object> readings;
     @Column(name = "arrival_millis", nullable = false)
     private Long arrivalTsMillis;
+    @Column(name = "event_millis", nullable = false)
+    private Long eventTsMillis;
     @Column(name = "ts", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime ts;
@@ -33,10 +35,11 @@ public class Device implements Serializable {
     public Device() {
     }
 
-    public Device(String deviceId, Map<String, Object> readings, long arriveTimeInMillis) {
+    public Device(String deviceId, Map<String, Object> readings, long arriveTimeInMillis, long eventTimeInMillis) {
         this.deviceId = deviceId;
         this.readings = readings;
         this.arrivalTsMillis = arriveTimeInMillis;
+        this.eventTsMillis = eventTimeInMillis;
         this.ts = LocalDateTime.now();
     }
 
@@ -62,6 +65,14 @@ public class Device implements Serializable {
 
     public void setArrivalTsMillis(Long arrivalTsMillis) {
         this.arrivalTsMillis = arrivalTsMillis;
+    }
+
+    public Long getEventTsMillis() {
+        return eventTsMillis;
+    }
+
+    public void setEventTsMillis(Long eventTsMillis) {
+        this.eventTsMillis = eventTsMillis;
     }
 
     public LocalDateTime getTs() {

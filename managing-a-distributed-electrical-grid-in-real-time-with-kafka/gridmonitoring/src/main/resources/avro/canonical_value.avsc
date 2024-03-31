@@ -1,0 +1,32 @@
+{
+  "namespace": "manning.devices.canonical",
+  "type": "record",
+  "name": "CanonicalValue",
+  "fields": [
+    {
+      "name": "uuid",
+      "type": "string"
+    },
+    {
+      "name": "regionId",
+       "type": ["null", "long"]
+    },
+    {
+      "name": "arrival_time_ms",
+       "type": ["null", "long"]
+    },
+    {
+      "name": "event_time_ms",
+       "type": ["null", "long"]
+    },
+    {
+      "name": "events",
+      "type": [ "null",
+        {
+          "type": "map",
+          "values": "string"
+        }
+      ]
+    }
+  ]
+}

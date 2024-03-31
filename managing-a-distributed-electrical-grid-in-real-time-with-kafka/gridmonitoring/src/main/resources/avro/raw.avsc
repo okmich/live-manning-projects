@@ -1,19 +1,23 @@
 {
-  "namespace": "manning.devices.raw.m1",
+  "namespace": "manning.devices.raw",
   "type": "record",
   "name": "RawRecord",
   "fields": [
     {
       "name": "uuid",
       "type": "string"
-    },
+     },
     {
       "name": "arrival_time_ms",
-      "type": ["long", "null"]
+       "type": ["long", "null"]
     },
     {
       "name": "body",
       "type": ["bytes", "null"]
+    },
+    {
+      "name": "body_reference",
+      "type": ["string", "null"]
     }
   ]
 }
