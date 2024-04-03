@@ -15,6 +15,7 @@ func makeRandomSlice(numItems, max int) []int {
 	return randomSlice
 }
 
+// Make a slice containing pseudorandom numbers in [0, max).
 func printSlice(slice []int, numItems int) {
 	var numberToPrint int = min(len(slice), numItems)
 	for i := 0; i < numberToPrint; i++ {
@@ -40,18 +41,34 @@ func checkSorted(slice []int) {
 	}
 }
 
-func bubbleSort(slice []int) {
-	//https://en.wikipedia.org/wiki/Bubble_sort
-	n := len(slice)
-	for n >= 1 {
-		newn := 0
-		for j := 1; j < n; j++ {
-			if slice[j-1] > slice[j] {
-				slice[j-1], slice[j] = slice[j], slice[j-1]
-				newn = j
-			}
+func partition(slice []int) int {
+	hi := len(slice)
+	pivot := slice[hi-1]
+
+	tempIndex := -1
+	for i := 0; i < hi-1; i++ {
+		if slice[i] <= pivot {
+			tempIndex = tempIndex + 1
+			slice[i], slice[tempIndex] = slice[tempIndex], slice[i]
 		}
-		n = newn
+	}
+	tempIndex = tempIndex + 1
+	slice[tempIndex], slice[hi-1] = slice[hi-1], slice[tempIndex]
+	return tempIndex
+}
+
+func quicksort(slice []int) {
+	//https://en.wikipedia.org/wiki/Quicksort
+	if len(slice) <= 1 {
+		return
+	}
+
+	p := partition(slice[0:len(slice)])
+	if p > 1 {
+		quicksort(slice[0:p])
+	}
+	if p <= len(slice)-1 {
+		quicksort(slice[p+1 : len(slice)])
 	}
 }
 
@@ -63,13 +80,13 @@ func main() {
 	fmt.Printf("Max: ")
 	fmt.Scanln(&max)
 
-	// Make and display an unsorted slice.
+	// Make and display the unsorted slice.
 	slice := makeRandomSlice(numItems, max)
 	printSlice(slice, 40)
 	fmt.Println()
 
 	// Sort and display the result.
-	bubbleSort(slice)
+	quicksort(slice)
 	printSlice(slice, 40)
 
 	// Verify that it's sorted.
