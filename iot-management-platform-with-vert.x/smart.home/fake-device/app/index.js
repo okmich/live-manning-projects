@@ -1,8 +1,7 @@
 const http = require('http')
 
-//create a server object:
 http.createServer(function (req, res) {
-  res.writeHead(200, { 'Content-Type': 'application/json' });
+  res.writeHead(200, { 'Content-Type': 'application/json' })
 
   res.write(JSON.stringify({
       "id" : "fake-device",
@@ -25,6 +24,6 @@ http.createServer(function (req, res) {
         }
       } ]
     }
-  )) //write a response to the client
-  res.end(); //end the response
-}).listen(8081) //the server object listens on port 8081
+  ))
+  res.end()
+}).listen(8099)
