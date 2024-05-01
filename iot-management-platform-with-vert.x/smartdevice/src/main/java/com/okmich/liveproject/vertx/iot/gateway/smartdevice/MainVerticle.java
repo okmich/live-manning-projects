@@ -12,13 +12,12 @@ import sensors.TemperatureSensor;
 import sensors.eCO2Sensor;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
 public class MainVerticle extends AbstractVerticle {
 
-  private final Logger LOGGER = LoggerFactory.getLogger( MainVerticle.class );
+  private final Logger LOGGER = LoggerFactory.getLogger(MainVerticle.class);
 
   @Override
   public void start(Promise<Void> startPromise) throws Exception {
@@ -30,7 +29,7 @@ public class MainVerticle extends AbstractVerticle {
     String gatewayHttpPort = Optional.ofNullable(System.getenv("GATEWAY_HTTP_PORT")).orElse("9090");
     int httpPort = Integer.parseInt(Optional.ofNullable(System.getenv("HTTP_PORT")).orElse("8081"));
 
-    if(deviceType.equals("http")) {
+    if (deviceType.equals("http")) {
       HttpDevice httpDevice = new HttpDevice(deviceId, deviceLocation, httpPort,
         List.of(new TemperatureSensor(), new HumiditySensor(), new eCO2Sensor())
       );
@@ -48,16 +47,22 @@ public class MainVerticle extends AbstractVerticle {
 
       registrationRequest.sendJsonObject(registrationRequestPayload).onSuccess(
         response -> {
-          if (response.statusCode() == 200){
+          if (response.statusCode() == 200) {
             LOGGER.info("Device registered with gateway successfully ");
             httpDevice.setConnectedToGateway(true);
             startServer(startPromise, httpDevice, httpPort);
           } else {
-            LOGGER.info("Device registration with gateway failed with response code " + response.statusCode());
+            var errorMessage = "Device registration with gateway failed with response code " + response.statusCode();
+            LOGGER.error(errorMessage);
+            startPromise.fail(errorMessage);
           }
         }
       ).onFailure(
-        error -> LOGGER.error("Connection to the Gateway failed: " + error.getMessage())
+        error -> {
+          var errorMessage = "Connection to the Gateway failed: " + error.getMessage();
+          LOGGER.error(errorMessage);
+          startPromise.fail(errorMessage);
+        }
       );
     } else {
       throw new UnsupportedOperationException("To be implemented in another milestone");
@@ -66,8 +71,10 @@ public class MainVerticle extends AbstractVerticle {
 
   private void startServer(Promise<Void> startPromise, HttpDevice httpDevice, int httpPort) {
     Router router = httpDevice.createRouter(vertx);
-    router.post("/").handler(routingContext ->
-      routingContext.json(httpDevice.jsonValue())
+    router.route("/").handler(routingContext -> {
+        LOGGER.info(httpDevice.jsonValue());
+        routingContext.json(httpDevice.jsonValue());
+      }
     );
 
     httpDevice.createHttpServer(vertx, router)
