@@ -7,6 +7,8 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
 import io.vertx.core.impl.logging.Logger;
 import io.vertx.core.impl.logging.LoggerFactory;
+import io.vertx.core.net.PemKeyCertOptions;
+import io.vertx.core.net.PemTrustOptions;
 import io.vertx.mqtt.MqttServer;
 import io.vertx.mqtt.MqttServerOptions;
 
@@ -31,12 +33,24 @@ public class MainVerticle extends AbstractVerticle {
     // Define the connection parameters to the MQTT server (the MQTT port).
     var mqttHost = Optional.ofNullable(System.getenv("MQTT_HOST")).orElse("localhost");
     var mqttPort = Integer.parseInt(Optional.ofNullable(System.getenv("MQTT_PORT")).orElse("1883"));
+    var mqttCert = Optional.ofNullable(System.getenv("MQTT_CERT")).orElse("");
+    var mqttKey = Optional.ofNullable(System.getenv("MQTT_KEY")).orElse("");
 
     //Create the MongoDB client.
     MongoStore.initialize(vertx, mongoHost, mongoPort, mongoBaseName);
 
     // Instantiate the MQTTServer.
-    MqttServer mqttServer = MqttServer.create(vertx, new MqttServerOptions().setHost(mqttHost).setPort(mqttPort));
+    var mqttOptions = new MqttServerOptions().setHost(mqttHost).setPort(mqttPort)
+      .setPemTrustOptions(
+        new PemTrustOptions().addCertPath(mqttCert)
+      )
+      .setKeyCertOptions(
+        new PemKeyCertOptions()
+          .setKeyPath(mqttKey)
+          .setCertPath(mqttCert)
+      )
+      .setSsl(true);;
+    MqttServer mqttServer = MqttServer.create(vertx, mqttOptions);
     //Set the endpointHandler: mqttServer.endpointHandler
     mqttServer.endpointHandler(new EndPointHandler());
 

@@ -29,8 +29,11 @@ public class MainVerticle extends AbstractVerticle {
   public void start(Promise<Void> startPromise) throws Exception {
 
     var mqttClientId = Optional.ofNullable(System.getenv("MQTT_CLIENT_ID")).orElse("gateway");
+    var mqttTopic = Optional.ofNullable(System.getenv("MQTT_TOPIC")).orElse("house");
     var mqttPort = Integer.parseInt(Optional.ofNullable(System.getenv("MQTT_PORT")).orElse("1883"));
     var mqttHost = Optional.ofNullable(System.getenv("MQTT_HOST")).orElse("mqtt-server");
+    var mqttCert = Optional.ofNullable(System.getenv("MQTT_CERT")).orElse("");
+    var mqttKey = Optional.ofNullable(System.getenv("MQTT_KEY")).orElse("");
     var redisHost = Optional.ofNullable(System.getenv("REDIS_HOST")).orElse("redis-server");
     var redisPort = Integer.parseInt(Optional.ofNullable(System.getenv("REDIS_PORT")).orElse("6379"));
     var authenticationToken = Optional.ofNullable(System.getenv("GATEWAY_TOKEN")).orElse("secret");
@@ -38,7 +41,7 @@ public class MainVerticle extends AbstractVerticle {
     var healthCheckFreq = Integer.parseInt(Optional.ofNullable(System.getenv("CHECK_FREQUENCY")).orElse("10000"));
 
     //initialize the mqtt client
-    MqttManager mqttManager = new MqttManager(mqttClientId, mqttHost, mqttPort);
+    MqttManager mqttManager = new MqttManager(mqttClientId, mqttHost, mqttPort, mqttCert, mqttKey);
     mqttManager.startAndConnectMqttClient(vertx)
       .onSuccess(success -> {
         var serviceDiscovery = new DiscoveryManager(redisHost, redisPort).getRedisServiceDiscoveryInstance(vertx);
@@ -58,7 +61,7 @@ public class MainVerticle extends AbstractVerticle {
 
         // Initialize a Periodic Task To Read the Values of the Devices.
         var webClient = WebClient.create(vertx);
-        DevicesHealth devicesHealth = new DevicesHealth(serviceDiscovery, webClient);
+        DevicesHealth devicesHealth = new DevicesHealth(serviceDiscovery, webClient, mqttManager.getMqttClient(), mqttTopic);
         vertx.setPeriodic(healthCheckFreq, devicesHealth::handleDevicesHealthCheck);
 
         // Create and start the http server

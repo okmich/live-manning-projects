@@ -42,7 +42,7 @@ public class DevicesHealth {
               if (mqttClient.isConnected()) {
                 mqttClient.publish(
                   this.mqttTopic, //
-                  Buffer.buffer(res.bodyAsString()),
+                  res.body(),
                   MqttQoS.AT_LEAST_ONCE,
                   false, // duplicated
                   false //Retained

@@ -88,7 +88,6 @@ public class MainVerticle extends AbstractVerticle {
           } else {
             httpDevice.setConnectedToGateway(true);
             System.out.println("Registration succeeded: " + response.statusCode());
-            System.out.println(response.bodyAsJsonObject().encodePrettily());
           }
         });
 
@@ -98,7 +97,7 @@ public class MainVerticle extends AbstractVerticle {
      */
       var router = httpDevice.createRouter(vertx);
 
-      router.get("/").handler(routingContext -> {
+      router.post("/").handler(routingContext -> {
         routingContext.json(httpDevice.jsonValue());
       });
 
@@ -116,11 +115,14 @@ public class MainVerticle extends AbstractVerticle {
       var mqttHost = Optional.ofNullable(System.getenv("MQTT_HOST")).orElse("mqtt-server");
       var mqttPort = Optional.ofNullable(System.getenv("MQTT_PORT")).orElse("1883");
       var mqttTopic = Optional.ofNullable(System.getenv("MQTT_TOPIC")).orElse("house");
+      var mqttCert = Optional.ofNullable(System.getenv("MQTT_CERT")).orElse("");
+      var mqttKey = Optional.ofNullable(System.getenv("MQTT_KEY")).orElse("");
       var frequency = Integer.parseInt(
         Optional.ofNullable(System.getenv("FREQUENCY")).orElse("5000")
       );
 
-      MqttDevice mqttDevice = (MqttDevice) new MqttDevice(deviceId, mqttHost, Integer.parseInt(mqttPort), mqttTopic)
+      MqttDevice mqttDevice = (MqttDevice) new MqttDevice(deviceId, mqttHost, Integer.parseInt(mqttPort),
+        mqttTopic, mqttCert, mqttKey)
         .setPosition(deviceLocation)
         .setCategory(deviceType)
         .setSensors(List.of(new TemperatureSensor(), new HumiditySensor(), new eCO2Sensor()));

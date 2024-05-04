@@ -6,6 +6,8 @@ import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.impl.logging.Logger;
 import io.vertx.core.impl.logging.LoggerFactory;
+import io.vertx.core.net.PemKeyCertOptions;
+import io.vertx.core.net.PemTrustOptions;
 import io.vertx.mqtt.MqttClient;
 import io.vertx.mqtt.MqttClientOptions;
 import io.vertx.mqtt.messages.MqttConnAckMessage;
@@ -14,16 +16,28 @@ public class MqttManager {
 
   private final Logger LOGGER = LoggerFactory.getLogger(MqttManager.class);
 
-  private final String mqttClientId;
   private final String mqttHost;
   private final int mqttPort;
+  private final MqttClientOptions mqttOptions;
   private MqttClient mqttClient;
   private CircuitBreaker breaker;
 
-  public MqttManager(String mqttClientId, String mqttHost, int mqttPort) {
-    this.mqttClientId = mqttClientId;
+  public MqttManager(String mqttClientId, String mqttHost, int mqttPort, String mqttCert, String mqttKey) {
     this.mqttHost = mqttHost;
     this.mqttPort = mqttPort;
+    this.mqttOptions = new MqttClientOptions()
+      .setClientId(mqttClientId)
+      .setPemTrustOptions(
+        new PemTrustOptions().addCertPath(mqttCert)
+      )
+      .setHostnameVerificationAlgorithm("HTTPS")
+      .setKeyCertOptions(
+        new PemKeyCertOptions()
+          .setKeyPath(mqttKey)
+          .setCertPath(mqttCert)
+      )
+      .setSsl(true);
+
   }
 
   public MqttClient getMqttClient() {
@@ -48,9 +62,7 @@ public class MqttManager {
   public Future<MqttConnAckMessage> startAndConnectMqttClient(Vertx vertx) {
     return getBreaker(vertx).execute(promise -> {
 
-      mqttClient = MqttClient.create(vertx, new MqttClientOptions()
-        .setClientId(this.mqttClientId)
-      ).exceptionHandler(throwable -> {
+      mqttClient = MqttClient.create(vertx, this.mqttOptions).exceptionHandler(throwable -> {
         LOGGER.error(throwable.getMessage(), throwable);
       }).closeHandler(voidValue -> {
         LOGGER.error("Connection with broker is lost");
@@ -73,7 +85,6 @@ public class MqttManager {
           promise.complete();
         });
     });
-
   }
 }
 

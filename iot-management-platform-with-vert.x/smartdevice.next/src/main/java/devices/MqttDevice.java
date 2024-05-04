@@ -8,6 +8,8 @@ import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.impl.logging.Logger;
 import io.vertx.core.impl.logging.LoggerFactory;
+import io.vertx.core.net.PemKeyCertOptions;
+import io.vertx.core.net.PemTrustOptions;
 import io.vertx.mqtt.MqttClient;
 import io.vertx.mqtt.MqttClientOptions;
 import io.vertx.mqtt.messages.MqttConnAckMessage;
@@ -23,21 +25,33 @@ public class MqttDevice implements Device, Mqtt {
   private final String mqttTopic;
   private final LinkedList<Sensor> sensors = new LinkedList<>();
   private final String id;
+  private final MqttClientOptions mqttOption;
   private MqttClient mqttClient;
   private CircuitBreaker circuitBreaker;
   private String position;
   private String category;
 
-  public MqttDevice(String id, String mqttHost, int mqttPort, String mqttTopic) {
+  public MqttDevice(String id, String mqttHost, int mqttPort, String mqttTopic, String mqttCert, String mqttKey) {
     this.id = id;
     this.mqttPort = mqttPort;
     this.mqttHost = mqttHost;
     this.mqttTopic = mqttTopic;
+    this.mqttOption = new MqttClientOptions().setClientId(this.id).
+      setPemTrustOptions(
+        new PemTrustOptions().addCertPath(mqttCert)
+      )
+      .setHostnameVerificationAlgorithm("HTTPS")
+      .setKeyCertOptions(
+        new PemKeyCertOptions()
+          .setKeyPath(mqttKey)
+          .setCertPath(mqttCert)
+      )
+      .setSsl(true);
   }
 
   @Override
   public MqttClient createMqttClient(Vertx vertx) {
-    return MqttClient.create(vertx, new MqttClientOptions().setClientId(this.id));
+    return MqttClient.create(vertx, this.mqttOption);
   }
 
   @Override
