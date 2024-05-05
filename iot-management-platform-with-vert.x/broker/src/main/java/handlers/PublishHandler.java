@@ -34,6 +34,7 @@ public class PublishHandler implements Handler<MqttPublishMessage> {
         "hour", LocalTime.now().toString());
 
       MongoStore.getMongoClient().save("devices", jsonObject)
+        .onSuccess(System.out::println)
         .onFailure(error -> {
           LOGGER.error(error.getMessage(), error);
         });
