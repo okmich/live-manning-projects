@@ -8,17 +8,17 @@ This application was generated using http://start.vertx.io
 
 To launch your tests:
 ```
-./mvnw clean test
+.\mvnw clean test
 ```
 
 To package your application:
 ```
-./mvnw clean package
+.\mvnw clean package
 ```
 
 To run your application:
 ```
-./mvnw clean compile exec:java
+.\run.webapp.bat
 ```
 
 == Help

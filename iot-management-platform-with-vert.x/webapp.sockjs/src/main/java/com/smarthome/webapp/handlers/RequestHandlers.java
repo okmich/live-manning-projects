@@ -10,10 +10,21 @@ import jwt.JwtHelper;
 
 public class RequestHandlers {
 
+  public static Handler<RoutingContext> isAuthenticatedHandler(AdminUser adminUser) {
+    return routingContext -> {
+      System.out.println(adminUser.isAuthenticated());
+      if (adminUser.isAuthenticated()) {
+        routingContext.next();
+      } else {
+        routingContext.fail(403);
+      }
+    };
+  }
+
   public static Handler<RoutingContext> authenticateHandler(JwtHelper jwtHelper, AdminUser adminUser) {
     return routingContext -> {
       var payload = routingContext.body().asJsonObject();
-      if (payload == null){
+      if (payload == null) {
         routingContext
           .response().setStatusCode(400)
           .end(new JsonObject().put("message", "Bad Request").encode());
@@ -59,7 +70,7 @@ public class RequestHandlers {
         }, () -> {
           System.out.println("All documents found");
           System.out.println(documents);
-          routingContext.json(JsonObject.of("subject",subject, "documents", documents));
+          routingContext.json(JsonObject.of("subject", subject, "documents", documents));
         });
     };
   }

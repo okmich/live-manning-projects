@@ -8,8 +8,6 @@ import io.vertx.rxjava3.core.streams.ReadStream;
 import io.vertx.rxjava3.ext.mongo.MongoClient;
 import io.vertx.rxjava3.ext.web.RoutingContext;
 
-import java.util.NoSuchElementException;
-
 public class MongoStore {
 
   private static MongoClient mongoClient;
@@ -18,25 +16,25 @@ public class MongoStore {
     mongoClient = MongoClient.create(
       vertx,
       new JsonObject()
-        .put("db_name",dataBaseName)
+        .put("db_name", dataBaseName)
         .put("useObjectId", false)
         .put("connection_string", connectionString)
     );
+  }
+
+  public static Flowable<JsonObject> getLastDevicesMetricsFlowable(int howMany) {
+    JsonObject query = new JsonObject();
+    var options = new FindOptions();
+    options.setSort(new JsonObject().put("_id", -1));
+    options.setLimit(howMany);
+
+    ReadStream<JsonObject> devices = mongoClient.findBatchWithOptions("devices", query, options);
+    return devices.toFlowable();
   }
 
   private void completeFetchRequest(RoutingContext ctx, JsonObject json) {
     ctx.response()
       .putHeader("Content-Type", "application/json")
       .end(json.encode());
-  }
-
-  public static Flowable<JsonObject> getLastDevicesMetricsFlowable(int howMany) {
-    JsonObject query = new JsonObject();
-    var options = new FindOptions();
-    options.setSort(new JsonObject().put("_id",-1));
-    options.setLimit(howMany);
-
-    ReadStream<JsonObject> devices = mongoClient.findBatchWithOptions("devices", query, options);
-    return devices.toFlowable();
   }
 }
