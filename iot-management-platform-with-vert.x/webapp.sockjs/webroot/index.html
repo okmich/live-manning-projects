@@ -3,45 +3,31 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0" />
-  <title>SmartHome</title>
+  <title>Smart.Home</title>
+
   <script src="/js/sockjs.js"></script>
   <script src="/js/vertx-eventbus.js"></script>
+  <script src="/js/chart.js"></script>
+
+  <!-- adoptedStyleSheets polyfill (FireFox) -->
+  <script src="/js/adoptedStyleSheets.js"></script>
+
 </head>
 <body>
-<h1>Work in Progress</h1>
+<main-application></main-application>
+
 <script type="module">
-  fetch('/authenticate', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      username: "root",
-      password: "admin"
-    }),
-  }).then(response => response.json())
-    .then(data => {
-      console.log('Success:', data)
+  import {Style} from '/js/helper.js'
 
-      let eventBus = new EventBus(`/eventbus/`)
-      eventBus.enableReconnect(true)
-
-      eventBus.onopen = _ => {
-        eventBus.registerHandler("service.message", (error, message) => {
-          let data = JSON.parse(message.body)
-          let device = data["device"]
-          console.log(device)
-        })
-      }
-
+  Style.loadCss('/css/bulma.min.css', 'bulma').then( sheet => {
+    document.adoptedStyleSheets=[sheet]
+    import("/components/main-application.js").then( _ => {
+      console.log("MainApplication component is loaded")
     })
-    .catch((error) => {
-      console.error('Error:', error)
-
-    })
+  })
 
 </script>
-</body>
 
+</body>
 </html>
 
