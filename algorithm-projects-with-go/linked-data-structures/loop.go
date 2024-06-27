@@ -134,25 +134,32 @@ func (l *LinkedList[T]) hasLoop() bool {
 	if l.isEmpty() {
 		return false
 	}
-	length := l.length()
+	// length := l.length()
 	slow := l.sentinel.next
 	var fast *Cell[T]
-
-	println(slow)
-	println(fast)
-
-	return slow == fast
+	if slow.next == nil {
+		return false
+	} else {
+		fast = slow.next
+	}
 
 	for {
-		// 	if slow.next != nil && slow.next.next != nil {
-		// 		slow = slow.next
-		// 		fast = slow.next.next
-		// 	} else {
-		// 		return false
-		// 	}
-		// 	if slow == fast {
-		// 		return true
-		// 	}
+		if fast == nil {
+			return false
+		} else {
+			fast = fast.next
+			if fast != nil {
+				fast = fast.next
+			} else {
+				return false
+			}
+		}
+
+		if slow == fast {
+			return true
+		} else {
+			slow = slow.next
+		}
 	}
 }
 
