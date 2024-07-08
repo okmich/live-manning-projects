@@ -64,6 +64,10 @@ func (hashTable *LinearProbingHashTable) find(name string) (int, int) {
 		}
 		probeSequenceLength++
 	}
+	if deletedIndex >= 0 {
+		return deletedIndex, hashTable.capacity
+	}
+
 	return -1, probeSequenceLength + 1
 }
 
