@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-const numItems = 20 // A reasonable value for exhaustive search.
+const numItems = 40 // A reasonable value for exhaustive search.
 
 const minValue = 1
 const maxValue = 10
@@ -113,8 +113,19 @@ func runAlgorithm(alg func([]Item, int) ([]Item, int, int), items []Item, allowe
 	fmt.Println()
 }
 
+func makeTestItems() []Item {
+	items := make([]Item, 4)
+
+	items[0] = Item{value: 50, weight: 8}
+	items[1] = Item{value: 150, weight: 2}
+	items[2] = Item{value: 210, weight: 6}
+	items[3] = Item{value: 30, weight: 1}
+
+	return items
+}
+
 func main() {
-	//items := makeTestItems()
+	// items := makeTestItems()
 	items := makeItems(numItems, minValue, maxValue, minWeight, maxWeight)
 	allowedWeight = sumWeights(items, true) / 2
 
@@ -128,10 +139,13 @@ func main() {
 	fmt.Println()
 
 	// Exhaustive search
-	if numItems > 65 { // Only run exhaustive search if numItems <= 23.
-		fmt.Println("Too many items for exhaustive search")
-	} else {
+	if numItems <= 23 { // Only run exhaustive search if numItems <= 23.
 		fmt.Println("*** Exhaustive Search ***")
 		runAlgorithm(exhaustiveSearch, items, allowedWeight)
+	} else if numItems <= 45 {
+		fmt.Println("*** Branch & Bound Search ***")
+		runAlgorithm(branchAndBound, items, allowedWeight)
+	} else {
+		fmt.Println("Too many items for exhaustive search")
 	}
 }
