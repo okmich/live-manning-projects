@@ -6,7 +6,8 @@ import (
 	"time"
 )
 
-const numItems = 40 // A reasonable value for exhaustive search.
+// const numItems = 20 // A reasonable value for exhaustive search.
+var numItems int = 45 // A reasonable value for branch-and-bound search.
 
 const minValue = 1
 const maxValue = 10
@@ -18,18 +19,38 @@ var allowedWeight int
 type Item struct {
 	value, weight int
 	isSelected    bool
+	id, blockedBy int
+	blockList     []int // Other items that this one blocks.
 }
 
+// func makeItems(numItems, minValue, maxValue, minWeight, maxWeight int) []Item {
+// 	items := make([]Item, numItems)
+
+// 	// random := rand.New(rand.NewSource(time.Now().UnixNano()))
+// 	random := rand.New(rand.NewSource(1337))
+// 	for i := 0; i < numItems; i++ {
+// 		value := random.Intn(maxValue-minValue+1) + minValue
+// 		weight := random.Intn(maxWeight-minWeight+1) + minWeight
+
+// 		items[i] = Item{value: value, weight: weight, isSelected: false}
+// 	}
+// 	return items
+// }
+
+// Make some random items.
 func makeItems(numItems, minValue, maxValue, minWeight, maxWeight int) []Item {
+	// Initialize a pseudorandom number generator.
+	random := rand.New(rand.NewSource(time.Now().UnixNano())) // Initialize with a changing seed
+	//random := rand.New(rand.NewSource(1337)) // Initialize with a fixed seed
+
 	items := make([]Item, numItems)
-
-	// random := rand.New(rand.NewSource(time.Now().UnixNano()))
-	random := rand.New(rand.NewSource(1337))
 	for i := 0; i < numItems; i++ {
-		value := random.Intn(maxValue-minValue+1) + minValue
-		weight := random.Intn(maxWeight-minWeight+1) + minWeight
-
-		items[i] = Item{value: value, weight: weight, isSelected: false}
+		items[i] = Item{
+			id: i, blockedBy: -1, blockList: nil,
+			value:      random.Intn(maxValue-minValue+1) + minValue,
+			weight:     random.Intn(maxWeight-minWeight+1) + minWeight,
+			isSelected: false,
+		}
 	}
 	return items
 }
@@ -125,6 +146,9 @@ func makeTestItems() []Item {
 }
 
 func main() {
+	fmt.Printf("Enter number of items: ")
+	fmt.Scanln(&numItems)
+
 	// items := makeTestItems()
 	items := makeItems(numItems, minValue, maxValue, minWeight, maxWeight)
 	allowedWeight = sumWeights(items, true) / 2
@@ -132,7 +156,6 @@ func main() {
 	// Display basic parameters.
 	fmt.Println("*** Parameters ***")
 	fmt.Printf("# items count: %d\n", numItems)
-	fmt.Printf("# items: %v\n", items)
 	fmt.Printf("Total value: %d\n", sumValues(items, true))
 	fmt.Printf("Total weight: %d\n", sumWeights(items, true))
 	fmt.Printf("Allowed weight: %d\n", allowedWeight)
@@ -145,6 +168,12 @@ func main() {
 	} else if numItems <= 45 {
 		fmt.Println("*** Branch & Bound Search ***")
 		runAlgorithm(branchAndBound, items, allowedWeight)
+	} else if numItems <= 85 {
+		fmt.Println("*** Rod's technique ***")
+		runAlgorithm(rodsTechnique, items, allowedWeight)
+	} else if numItems <= 350 {
+		fmt.Println("*** Rod's sorted technique ***")
+		runAlgorithm(rodsTechniqueSorted, items, allowedWeight)
 	} else {
 		fmt.Println("Too many items for exhaustive search")
 	}
