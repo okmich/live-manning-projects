@@ -165,16 +165,23 @@ func main() {
 	if numItems <= 23 { // Only run exhaustive search if numItems <= 23.
 		fmt.Println("*** Exhaustive Search ***")
 		runAlgorithm(exhaustiveSearch, items, allowedWeight)
-	} else if numItems <= 45 {
+	}
+
+	if numItems <= 45 {
 		fmt.Println("*** Branch & Bound Search ***")
 		runAlgorithm(branchAndBound, items, allowedWeight)
-	} else if numItems <= 85 {
+	}
+
+	if numItems <= 85 {
 		fmt.Println("*** Rod's technique ***")
 		runAlgorithm(rodsTechnique, items, allowedWeight)
-	} else if numItems <= 350 {
+	}
+
+	if numItems <= 350 {
 		fmt.Println("*** Rod's sorted technique ***")
 		runAlgorithm(rodsTechniqueSorted, items, allowedWeight)
-	} else {
-		fmt.Println("Too many items for exhaustive search")
 	}
+
+	fmt.Println("*** Dynamic programming ***")
+	runAlgorithm(dynamicProgramming, items, allowedWeight)
 }
